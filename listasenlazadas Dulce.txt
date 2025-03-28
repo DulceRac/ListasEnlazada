@@ -1,0 +1,276 @@
+/**
+ * Clase Nodo para una lista enlazada simple
+ * @class
+ */
+class Nodo {
+  /**
+   * Constructor para crear un nuevo nodo
+   * @constructor
+   * @param {number} dato - Valor a almacenar en el nodo
+   * @param {Nodo} enlace - Referencia al siguiente nodo
+   */
+  constructor(dato, enlace = null) {
+    this.dato = dato;
+    this.enlace = enlace;
+  }
+
+  /**
+   * Obtiene el valor almacenado en el nodo
+   * @returns {number} El valor del nodo
+   */
+  leerDato() {
+    return this.dato;
+  }
+
+  /**
+   * Obtiene el siguiente nodo en la lista
+   * @returns {Nodo} El siguiente nodo
+   */
+  siguiente() {
+    return this.enlace;
+  }
+}
+
+/**
+ * Clase ListaEnlazada que implementa operaciones básicas
+ * @class
+ */
+class ListaEnlazada {
+  constructor() {
+    /** @private */
+    this.primero = null;
+  }
+
+  /**
+   * Obtiene el primer nodo de la lista
+   * @returns {Nodo} El primer nodo de la lista
+   */
+  leerPrimero() {
+    return this.primero;
+  }
+
+  /**
+   * Inserta un nuevo nodo al inicio de la lista
+   * @param {number} entrada - Valor a insertar
+   */
+  insertarCabezaLista(entrada) {
+    const nuevo = new Nodo(entrada, this.primero);
+    this.primero = nuevo;
+  }
+
+  /**
+   * Inserta un nuevo nodo después del nodo especificado
+   * @param {Nodo} anterior - Nodo después del cual se insertará el nuevo valor
+   * @param {number} entrada - Valor a insertar
+   */
+  insertarLista(anterior, entrada) {
+    if (anterior !== null) {
+      const nuevo = new Nodo(entrada, anterior.enlace);
+      anterior.enlace = nuevo;
+    }
+  }
+
+  /**
+   * Elimina el primer nodo con el valor especificado
+   * @param {number} entrada - Valor a eliminar
+   */
+  eliminar(entrada) {
+    let actual = this.primero;
+    let anterior = null;
+
+    while (actual !== null && actual.dato !== entrada) {
+      anterior = actual;
+      actual = actual.enlace;
+    }
+
+    if (actual !== null) {
+      if (actual === this.primero) {
+        this.primero = actual.enlace;
+      } else {
+        anterior.enlace = actual.enlace;
+      }
+    }
+  }
+
+  /**
+   * Busca un nodo con el valor especificado
+   * @param {number} destino - Valor a buscar
+   * @returns {Nodo|null} El nodo encontrado o null si no existe
+   */
+  buscarLista(destino) {
+    let indice = this.primero;
+    while (indice !== null) {
+      if (indice.dato === destino) {
+        return indice;
+      }
+      indice = indice.enlace;
+    }
+    return null;
+  }
+
+  /**
+   * Muestra los valores de la lista en la consola
+   */
+  visualizar() {
+    let n = this.primero;
+    const elementos = [];
+    while (n !== null) {
+      elementos.push(n.dato);
+      n = n.enlace;
+    }
+    console.log(elementos.join(' → '));
+  }
+
+  /**
+   * Invierte el orden de los nodos en la lista
+   */
+  invertir() {
+    let actual = this.primero;
+    let previo = null;
+    let siguiente = null;
+    while (actual !== null) {
+      siguiente = actual.enlace;
+      actual.enlace = previo;
+      previo = actual;
+      actual = siguiente;
+    }
+    this.primero = previo;
+  }
+
+  /**
+   * Elimina nodos duplicados de la lista
+   */
+  eliminarDuplicados() {
+    let actual = this.primero;
+    while (actual !== null) {
+      let iterador = actual;
+      while (iterador.enlace !== null) {
+        if (iterador.enlace.dato === actual.dato) {
+          iterador.enlace = iterador.enlace.enlace;
+        } else {
+          iterador = iterador.enlace;
+        }
+      }
+      actual = actual.enlace;
+    }
+  }
+
+  /**
+   * Obtiene el n-ésimo elemento desde el final de la lista
+   * @param {number} n - Posición desde el final (1-based)
+   * @returns {number} El valor del nodo o -1 si no existe
+   */
+  obtenerDesdeElFinal(n) {
+    let principal = this.primero;
+    let referencia = this.primero;
+    let contador = 0;
+    
+    while (contador < n) {
+      if (referencia === null) return -1;
+      referencia = referencia.enlace;
+      contador++;
+    }
+    
+    while (referencia !== null) {
+      principal = principal.enlace;
+      referencia = referencia.enlace;
+    }
+    
+    return principal.dato;
+  }
+}
+
+// Pruebas automáticas usando console.assert()
+function ejecutarPruebas() {
+  console.log("Iniciando pruebas...");
+  
+  // Prueba 1: Lista vacía
+  const lista1 = new ListaEnlazada();
+  console.assert(lista1.leerPrimero() === null, "Prueba 1 falló: Lista vacía debería tener primero = null");
+  
+  // Prueba 2: Insertar en cabeza
+  const lista2 = new ListaEnlazada();
+  lista2.insertarCabezaLista(1);
+  console.assert(lista2.leerPrimero().dato === 1, "Prueba 2 falló: Primer elemento debería ser 1");
+  
+  // Prueba 3: Insertar múltiples elementos
+  lista2.insertarCabezaLista(2);
+  lista2.insertarCabezaLista(3);
+  console.assert(lista2.leerPrimero().dato === 3, "Prueba 3 falló: Primer elemento debería ser 3");
+  
+  // Prueba 4: Buscar elemento existente
+  const nodo = lista2.buscarLista(2);
+  console.assert(nodo !== null && nodo.dato === 2, "Prueba 4 falló: Debería encontrar el valor 2");
+  
+  // Prueba 5: Buscar elemento no existente
+  console.assert(lista2.buscarLista(5) === null, "Prueba 5 falló: No debería encontrar el valor 5");
+  
+  // Prueba 6: Eliminar elemento
+  lista2.eliminar(2);
+  console.assert(lista2.buscarLista(2) === null, "Prueba 6 falló: El valor 2 debería haber sido eliminado");
+  
+  // Prueba 7: Invertir lista
+  const lista3 = new ListaEnlazada();
+  lista3.insertarCabezaLista(1);
+  lista3.insertarCabezaLista(2);
+  lista3.insertarCabezaLista(3);
+  lista3.invertir();
+  console.assert(lista3.leerPrimero().dato === 1, "Prueba 7 falló: Primer elemento después de invertir debería ser 1");
+  
+  // Prueba 8: Eliminar duplicados
+  const lista4 = new ListaEnlazada();
+  lista4.insertarCabezaLista(1);
+  lista4.insertarCabezaLista(2);
+  lista4.insertarCabezaLista(2);
+  lista4.insertarCabezaLista(3);
+  lista4.eliminarDuplicados();
+  let count = 0;
+  let current = lista4.leerPrimero();
+  while (current !== null) {
+    if (current.dato === 2) count++;
+    current = current.enlace;
+  }
+  console.assert(count === 1, "Prueba 8 falló: Debería haber solo un 2 en la lista");
+  
+  // Prueba 9: Obtener desde el final
+  const lista5 = new ListaEnlazada();
+  lista5.insertarCabezaLista(1);
+  lista5.insertarCabezaLista(2);
+  lista5.insertarCabezaLista(3);
+  lista5.insertarCabezaLista(4);
+  lista5.insertarCabezaLista(5);
+  console.assert(lista5.obtenerDesdeElFinal(2) === 2, "Prueba 9 falló: El 2do desde el final debería ser 2");
+  
+  console.log("Pruebas completadas. Si no hay mensajes de error, todas pasaron.");
+}
+
+// Ejemplos de uso
+function mostrarEjemplos() {
+  console.log("\nEjemplo 1: Lista con múltiples elementos");
+  const lista = new ListaEnlazada();
+  lista.insertarCabezaLista(3);
+  lista.insertarCabezaLista(2);
+  lista.insertarCabezaLista(1);
+  lista.insertarCabezaLista(2);
+  lista.insertarCabezaLista(3);
+  lista.visualizar();
+  
+  console.log("\nEjemplo 2: Invertir lista");
+  lista.invertir();
+  lista.visualizar();
+  
+  console.log("\nEjemplo 3: Eliminar duplicados");
+  lista.eliminarDuplicados();
+  lista.visualizar();
+  
+  console.log("\nEjemplo 4: Obtener 2do elemento desde el final");
+  console.log("Resultado:", lista.obtenerDesdeElFinal(2));
+  
+  console.log("\nEjemplo 5: Lista vacía");
+  const listaVacia = new ListaEnlazada();
+  console.log("Primer elemento:", listaVacia.leerPrimero());
+}
+
+// Ejecutar pruebas y ejemplos
+ejecutarPruebas();
+mostrarEjemplos();
